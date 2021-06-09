@@ -8,10 +8,7 @@ import com.shareknowledge.demo.config.EmbeddedMongoWithTransactionsConfig;
 import com.shareknowledge.demo.dto.StudentModel;
 import com.shareknowledge.demo.repository.StudentRepository;
 import de.flapdoodle.embed.mongo.MongodExecutable;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +17,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.event.annotation.AfterTestClass;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 @ActiveProfiles("test")
@@ -42,17 +41,18 @@ public class StudentServiceTest {
     @Autowired
     private MongoClient mongoClient;
 
-    @AfterTestClass
-    void clean() {
-        if (mongodExecutable != null)
-            mongodExecutable.stop();
+    @Test
+    @Order(0)
+    void init() throws InterruptedException {
+        Thread.sleep(10000);
+        MongoDatabase db = mongoClient.getDatabase("demo");
+        db.createCollection("students");
     }
 
     @Test
     @Order(1)
     void saveStudentTest() throws JsonProcessingException {
-        MongoDatabase db = mongoClient.getDatabase("demo");
-        db.createCollection("students");
+
         Long id = saveStudent();
         assert (studentRepository.findAll().size() == 1);
     }
@@ -71,6 +71,12 @@ public class StudentServiceTest {
         Long id = saveStudent();
         studentService.deleteStudent(id);
         assert (studentRepository.findAll().size() == 2);
+    }
+    @Test
+    @Order(4)
+    void clean() {
+        if (mongodExecutable != null)
+            mongodExecutable.stop();
     }
 
     private String getRequestBody() {

@@ -19,16 +19,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+/*@Reference :
+* https://apisimulator.io/spring-boot-auto-configuration-embedded-mongodb-transactions/*/
 /**
  * Class for auto-configuring and starting an embedded MongoDB with support for transactions.
  * As there's some overhead in using it and slower startup time, use it only if support for
